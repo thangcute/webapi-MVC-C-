@@ -1,0 +1,107 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="ProjectDBModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+  <EntityType Name="Employee">
+    <Key>
+      <PropertyRef Name="EmployeeID" />
+    </Key>
+    <Property Name="EmployeeID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="TeamID" Type="Int32" />
+    <Property Name="FullName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="Gender" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="Birthday" Type="DateTime" Precision="3" />
+    <NavigationProperty Name="Team" Relationship="Self.FK_Employees_Teams" FromRole="Employees" ToRole="Teams" />
+  </EntityType>
+  <EntityType Name="Plan">
+    <Key>
+      <PropertyRef Name="PlanID" />
+    </Key>
+    <Property Name="PlanID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="ProjectID" Type="Int32" />
+    <Property Name="TeamID" Type="Int32" />
+    <Property Name="JoinDate" Type="DateTime" Precision="3" />
+    <NavigationProperty Name="Project" Relationship="Self.FK_Plans_Projects" FromRole="Plans" ToRole="Projects" />
+    <NavigationProperty Name="Team" Relationship="Self.FK_Plans_Teams" FromRole="Plans" ToRole="Teams" />
+  </EntityType>
+  <EntityType Name="Project">
+    <Key>
+      <PropertyRef Name="ProjectID" />
+    </Key>
+    <Property Name="ProjectID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="ProjectName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="StartDate" Type="DateTime" Precision="3" />
+    <Property Name="EndDate" Type="DateTime" Precision="3" />
+    <Property Name="TotalMoney" Type="Double" />
+    <NavigationProperty Name="Plans" Relationship="Self.FK_Plans_Projects" FromRole="Projects" ToRole="Plans" />
+  </EntityType>
+  <EntityType Name="Team">
+    <Key>
+      <PropertyRef Name="TeamID" />
+    </Key>
+    <Property Name="TeamID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="TeamLeaderID" Type="Int32" />
+    <Property Name="TeamName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="TotalMember" Type="Int32" />
+    <NavigationProperty Name="Employees" Relationship="Self.FK_Employees_Teams" FromRole="Teams" ToRole="Employees" />
+    <NavigationProperty Name="Plans" Relationship="Self.FK_Plans_Teams" FromRole="Teams" ToRole="Plans" />
+  </EntityType>
+  <Association Name="FK_Employees_Teams">
+    <End Role="Teams" Type="Self.Team" Multiplicity="0..1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Role="Employees" Type="Self.Employee" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Teams">
+        <PropertyRef Name="TeamID" />
+      </Principal>
+      <Dependent Role="Employees">
+        <PropertyRef Name="TeamID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Plans_Projects">
+    <End Role="Projects" Type="Self.Project" Multiplicity="0..1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Role="Plans" Type="Self.Plan" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Projects">
+        <PropertyRef Name="ProjectID" />
+      </Principal>
+      <Dependent Role="Plans">
+        <PropertyRef Name="ProjectID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Plans_Teams">
+    <End Role="Teams" Type="Self.Team" Multiplicity="0..1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Role="Plans" Type="Self.Plan" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Teams">
+        <PropertyRef Name="TeamID" />
+      </Principal>
+      <Dependent Role="Plans">
+        <PropertyRef Name="TeamID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityContainer Name="ProjectDBEntities" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="Employees" EntityType="Self.Employee" />
+    <EntitySet Name="Plans" EntityType="Self.Plan" />
+    <EntitySet Name="Projects" EntityType="Self.Project" />
+    <EntitySet Name="Teams" EntityType="Self.Team" />
+    <AssociationSet Name="FK_Employees_Teams" Association="Self.FK_Employees_Teams">
+      <End Role="Teams" EntitySet="Teams" />
+      <End Role="Employees" EntitySet="Employees" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Plans_Projects" Association="Self.FK_Plans_Projects">
+      <End Role="Projects" EntitySet="Projects" />
+      <End Role="Plans" EntitySet="Plans" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Plans_Teams" Association="Self.FK_Plans_Teams">
+      <End Role="Teams" EntitySet="Teams" />
+      <End Role="Plans" EntitySet="Plans" />
+    </AssociationSet>
+  </EntityContainer>
+</Schema>
